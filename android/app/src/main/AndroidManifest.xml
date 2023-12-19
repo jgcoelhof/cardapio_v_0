@@ -1,5 +1,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.cardapio_v_0">
+   package="com.example.cardapio_v_0">
+   <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+   <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+
    <application
         android:label="cardapio_v_0"
         android:name="${applicationName}"

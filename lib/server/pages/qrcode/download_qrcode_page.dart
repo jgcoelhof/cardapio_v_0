@@ -3,7 +3,6 @@ import 'dart:typed_data';
 import 'dart:ui' as ui;
 
 import 'package:cardapio_v_0/widgets/widgets.dart';
-import 'package:share/share.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:qr_flutter/qr_flutter.dart';
@@ -30,7 +29,6 @@ class _DownloadQrCodePageState extends State<DownloadQrCodePage> {
     Uint8List pngBytes = byteData!.buffer.asUint8List();
     File imgFile = File("$directory/qrCode.png");
     await imgFile.writeAsBytes(pngBytes);
-    await Share.shareFiles([imgFile.path], text: "Your text share");
   }
 
   @override
@@ -115,7 +113,7 @@ class _DownloadQrCodePageState extends State<DownloadQrCodePage> {
                       child: Center(
                         child: RepaintBoundary(
                           key: globalKey,
-                          child: QrImage(
+                          child: QrImageView(
                             data: "${widget.textQrCode}",
                             version: QrVersions.auto,
                             size: 280,
