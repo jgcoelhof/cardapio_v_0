@@ -39,7 +39,7 @@ class _CardapioPageState extends State<CardapioPage> {
                 child: GestureDetector(
                   onTap: () async {
                     result = await FilePicker.platform.pickFiles(
-                      type: FileType.any,
+                      type: FileType.custom,
                       allowCompression: true,
                       allowMultiple: false,
                       allowedExtensions: ['pdf'],
@@ -48,10 +48,11 @@ class _CardapioPageState extends State<CardapioPage> {
                       return;
                     } else {
                       result?.files.forEach((element) {
-                        filePath = element.path!;
+                        filePath = element.name!;
                         setState(() {});
                       });
                     }
+                    print(result);
                   },
                   child: SizedBox(
                     height: 424,
