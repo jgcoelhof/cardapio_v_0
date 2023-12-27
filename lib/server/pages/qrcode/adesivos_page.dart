@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'download_qrcode_page.dart';
 
-import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:cardapio_v_0/widgets/widgets.dart';
 
 class AdesivosPage extends StatefulWidget {
@@ -17,21 +15,6 @@ class AdesivosPage extends StatefulWidget {
 class _AdesivosPageState extends State<AdesivosPage> {
   final TextEditingController textQr = TextEditingController();
   String textQrCodeScan = "";
-
-  Future<void> scanQrCode() async {
-    try {
-      final qrCod = await FlutterBarcodeScanner.scanBarcode(
-          "#ff6666", "cancel", true, ScanMode.QR);
-      if (qrCod.isNotEmpty) {
-        print("My code qr : $qrCod");
-        textQrCodeScan = qrCod;
-        setState(() {});
-      }
-    } on PlatformException {
-      print("exception");
-    }
-  }
-
   List<Widget> buildAdesivos() {
     List<Widget> adesivos = [];
 
@@ -44,8 +27,7 @@ class _AdesivosPageState extends State<AdesivosPage> {
               MaterialPageRoute(
                 builder: (context) => DownloadQrCodePage(
                   textQrCode: "CÓDIGO_QR_AQUI",
-                  // Substitua pelo seu código QR
-                  count: i, // Adicione o número da mesa como parâmetro
+                  count: i,
                 ),
               ),
             );
@@ -59,7 +41,7 @@ class _AdesivosPageState extends State<AdesivosPage> {
                 width: 95,
               ),
               Positioned(
-                top: 28,
+                top: 16,
                 left: 29,
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -69,18 +51,15 @@ class _AdesivosPageState extends State<AdesivosPage> {
                       textAlign: TextAlign.center,
                       style: const TextStyle(
                         color: Colors.white,
-                        fontSize: 20,
+                        fontSize: 18,
                         fontFamily: 'Figtree',
                         fontWeight: FontWeight.w400,
-                        height: 0,
                       ),
                     ),
-                    const SizedBox(height: 4),
-                    // Espaçamento entre o número e o ícone
                     const Icon(
                       Icons.qr_code_scanner,
                       color: Colors.white,
-                      size: 36,
+                      size: 32,
                     ),
                   ],
                 ),
@@ -90,7 +69,6 @@ class _AdesivosPageState extends State<AdesivosPage> {
         ),
       );
     }
-
     return adesivos;
   }
 
@@ -115,7 +93,6 @@ class _AdesivosPageState extends State<AdesivosPage> {
             Expanded(
               child: GridView.count(
                 crossAxisCount: 3,
-                // Defina o número de colunas conforme necessário
                 children: buildAdesivos(),
               ),
             ),
