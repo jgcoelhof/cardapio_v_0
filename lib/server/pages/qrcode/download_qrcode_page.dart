@@ -11,8 +11,10 @@ import 'package:path_provider/path_provider.dart';
 class DownloadQrCodePage extends StatefulWidget {
   final String? textQrCode;
   final int count;
+
   const DownloadQrCodePage({Key? key, this.textQrCode, required this.count})
       : super(key: key);
+
   @override
   State<DownloadQrCodePage> createState() => _DownloadQrCodePageState();
 }
@@ -133,7 +135,9 @@ class _DownloadQrCodePageState extends State<DownloadQrCodePage> {
               ),
             ),
             const Spacer(),
-            DefaultButton(onPressed: () {}, buttonText: "Baixar QR Code")
+            DefaultButton(
+                onPressed: () => converQrCodeToImage(),
+                  buttonText: "Baixar QR Code")
           ],
         ),
       ),
