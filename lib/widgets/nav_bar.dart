@@ -4,6 +4,8 @@ import 'package:cardapio_v_0/server/pages/cardapio_page.dart';
 import 'package:cardapio_v_0/server/pages/qrcode/adesivos_page.dart';
 import 'package:cardapio_v_0/server/pages/tables_page.dart';
 
+import '../server/pages/widget_tables.dart';
+
 class NavBar extends StatefulWidget {
   final int count;
 
