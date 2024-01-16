@@ -26,9 +26,11 @@ dependencies:
   http: ^1.1.0
   file_picker: ^6.1.1
   path: ^1.8.3
+  async: ^2.8.2
 
   #web_socket
   socket_io_client: ^2.0.3+1
+  provider: ^6.1.1
 
 
 dev_dependencies:

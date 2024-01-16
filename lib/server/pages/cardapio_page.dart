@@ -1,8 +1,12 @@
+import 'package:async/async.dart';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-
+import 'package:http/http.dart' as http;
+import 'package:path/path.dart';
+import 'dart:io';
 import '../../widgets/widgets.dart';
+
 
 class CardapioPage extends StatefulWidget {
   const CardapioPage({Key? key}) : super(key: key);
@@ -14,6 +18,34 @@ class CardapioPage extends StatefulWidget {
 class _CardapioPageState extends State<CardapioPage> {
   FilePickerResult? result;
   var filePath = '';
+  var fileName = '';
+  late File pdfFile;
+
+  void uploadFile(File pdfFile) async {
+    var request = http.MultipartRequest('POST', Uri.parse('http://192.168.0.9:3000/upload'));
+
+    // Adicione o arquivo ao formulário
+    request.files.add(http.MultipartFile.fromBytes(
+      'pdfFile',
+      await pdfFile.readAsBytes(),
+      filename: 'documento.pdf',
+    ));
+
+    try {
+      // Envie a requisição
+      var response = await request.send();
+
+      // Verifique se a resposta foi bem-sucedida (código de status 200)
+      if (response.statusCode == 200) {
+        print('Upload bem-sucedido');
+        print('Resposta do servidor: ${await response.stream.bytesToString()}');
+      } else {
+        print('Erro durante o upload. Código de status: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Erro durante o upload: $e');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -48,7 +80,9 @@ class _CardapioPageState extends State<CardapioPage> {
                     return;
                   } else {
                     result?.files.forEach((element) {
-                      filePath = element.name;
+                      print(element);
+                      pdfFile = File(element.path!);
+                      fileName = element.name;
                       setState(() {});
                     });
                   }
@@ -118,7 +152,7 @@ class _CardapioPageState extends State<CardapioPage> {
                                   const SizedBox(width: 5),
                                   Expanded(
                                     child: Text(
-                                      filePath,
+                                      fileName,
                                       style: const TextStyle(
                                         color: Colors.black,
                                         fontSize: 11,
@@ -146,7 +180,7 @@ class _CardapioPageState extends State<CardapioPage> {
           ),
           DefaultButton(
             onPressed: () {
-              // Lógica específica para essa tela
+              uploadFile(pdfFile);
             },
             buttonText: "Salvar",
           ),

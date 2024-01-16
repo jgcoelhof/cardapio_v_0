@@ -2,8 +2,11 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:provider/provider.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 
+import '../../models/tableStatus.dart';
+import '../../provider/statusProvider.dart';
 import '../../webSocket/block.dart';
 import '../../webSocket/socket_helper.dart';
 
@@ -18,25 +21,30 @@ class TablesCardapio extends StatefulWidget {
 }
 
 class _TablesCardapioState extends State<TablesCardapio> {
-  late List<TableStatus> tables;
   IO.Socket? socket;
   late SocketManager socketManager;
   late CounterBloc counterBloc;
-
-  // Variável para rastrear se a subscrição já foi feita
-  // bool isSubscribed = false;
+  late AppState appState;
 
 
   @override
   void initState() {
     super.initState();
-    tables = createTables(widget.numberOfTables);
+
+    appState = Provider.of<AppState>(context, listen: false);
+
+    if (!appState.wasReinitialized) {
+      Future.delayed(Duration.zero, () {
+        appState.setTables(createTables(widget.numberOfTables));
+        appState.setWasReinitialized(true);
+      });
+    }
     socketManager = SocketManager.shared;
-    // //socketManager.initSocket();
+
     counterBloc = socketManager.counterBloc;
 
 
-    // if (!isSubscribed) {
+
       SocketManager.shared.subscribeToCounterUpdates((data) {
         if (data.isNotEmpty){
           String tableNumber = data[0];
@@ -45,9 +53,7 @@ class _TablesCardapioState extends State<TablesCardapio> {
           changeTableStatus(tableNumber,tableStatus);
         }
       });
-    // }
 
-    // isSubscribed = true;
 
   }
 
@@ -80,79 +86,22 @@ class _TablesCardapioState extends State<TablesCardapio> {
           crossAxisSpacing: 8,
           childAspectRatio: 1.1,
         ),
-        itemCount: tables.length,
+        itemCount: appState.tables.length,
         itemBuilder: (BuildContext context, int index) {
-          return buildTableBlock(tables[index]);
+          return buildTableBlock(appState.tables[index]);
         },
       ),
-
-
-
-      // StreamBuilder<List<dynamic>>(
-      //   stream: counterBloc.counterStream,
-      //   builder: (context, snapshot) {
-      //     if (snapshot.hasData) {
-      //       // Lógica para atualizar o estado das mesas com base nos dados do stream
-      //       print(snapshot.data);
-      //       if (snapshot.data!.isNotEmpty){
-      //         String tableNumber = snapshot.data?[0];
-      //         String tableStatus = snapshot.data?[1];
-      //
-      //         changeTableStatus(tableNumber,tableStatus);
-      //       }
-      //
-      //       // Retorna o GridView.builder com as mesas atualizadas
-      //       return GridView.builder(
-      //         gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-      //           maxCrossAxisExtent: 150.0,
-      //           mainAxisSpacing: 8.0,
-      //           crossAxisSpacing: 8.0,
-      //           childAspectRatio: 3 / 2,
-      //         ),
-      //         itemCount: tables.length,
-      //         itemBuilder: (BuildContext context, int index) {
-      //           return buildTableBlock(tables[index]);
-      //         },
-      //       );
-      //     } else {
-      //       // Retorna um widget de carregamento ou outra coisa enquanto os dados estão sendo carregados
-      //       return CircularProgressIndicator();
-      //     }
-      //   },
-      // ),
-
     );
   }
 
-  // void changeTableStatus(String tableNumber, String newStatus) {
-  //   setState(() {
-  //     // Encontre a mesa com o número correspondente
-  //     try {
-  //       // Encontra a mesa correspondente e atualiza o status
-  //       TableStatus? table = tables.firstWhere(
-  //             (table) => table.tableNumber == tableNumber,
-  //         orElse: () => null,
-  //       );
-  //
-  //       if (table != null) {
-  //         table.status = newStatus;
-  //       } else {
-  //         // Lida com o caso em que a mesa não é encontrada
-  //         print('Mesa $tableNumber não encontrada.');
-  //       }
-  //     } catch (e) {
-  //       // Lida com outras exceções
-  //       print('Ocorreu um erro: $e');
-  //     }
-  //   });
-  // }
+
 
   void changeTableStatus(String tableNumber, String newStatus) {
     setState(() {
       // Encontre a mesa com o número correspondente
       try {
         // Encontra a mesa correspondente e atualiza o status
-        TableStatus table = tables.firstWhere(
+        TableStatus table = appState.tables.firstWhere(
               (table) => table.tableNumber == tableNumber,
         );
 
@@ -211,44 +160,5 @@ class _TablesCardapioState extends State<TablesCardapio> {
       ),
     );
   }
-  // Widget buildTableBlock(TableStatus table) {
-  //   Color blockColor = Colors.white; // Cor padrão
-  //
-  //   switch (table.status) {
-  //     case 'callingWaiter':
-  //       blockColor = Colors.red;
-  //       break;
-  //     case 'payingBill':
-  //       blockColor = Colors.green;
-  //       break;
-  //     case 'readingQR':
-  //       blockColor = Colors.amber;
-  //       break;
-  //   }
-  //
-  //   return InkWell(
-  //     onTap: () {
-  //       // Adicione lógica para lidar com o clique na mesa
-  //       // Isso pode incluir a navegação para a página do cardápio, etc.
-  //       // Por enquanto, apenas imprima o número da mesa.
-  //       print('Clicou na ${table.tableNumber}');
-  //     },
-  //     child: Container(
-  //       color: blockColor,
-  //       child: Center(
-  //         child: Text(
-  //           table.tableNumber,
-  //           style: TextStyle(color: Colors.black), // Cor do texto
-  //         ),
-  //       ),
-  //     ),
-  //   );
-  // }
 }
 
-class TableStatus {
-  late String tableNumber;
-  late String status;
-
-  TableStatus(this.tableNumber, this.status);
-}

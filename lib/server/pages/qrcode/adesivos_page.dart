@@ -26,7 +26,7 @@ class _AdesivosPageState extends State<AdesivosPage> {
               context,
               MaterialPageRoute(
                 builder: (context) => DownloadQrCodePage(
-                  textQrCode: "CÓDIGO_QR_AQUI",
+                  textQrCode: "http://192.168.0.9:3000/mesa/$i/callingWaiter",
                   count: i,
                 ),
               ),
